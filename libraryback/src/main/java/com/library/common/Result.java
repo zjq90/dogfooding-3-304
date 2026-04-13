@@ -2,6 +2,10 @@ package com.library.common;
 
 import lombok.Data;
 
+/**
+ * 统一响应结果封装类
+ * 用于统一返回API响应格式
+ */
 @Data
 public class Result<T> {
     

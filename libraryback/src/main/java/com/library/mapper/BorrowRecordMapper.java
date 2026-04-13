@@ -11,6 +11,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 借阅记录数据访问层
+ */
 @Mapper
 public interface BorrowRecordMapper extends BaseMapper<BorrowRecord> {
     
@@ -31,6 +34,9 @@ public interface BorrowRecordMapper extends BaseMapper<BorrowRecord> {
     
     @Select("SELECT COUNT(*) FROM borrow_record WHERE status = 0 AND due_date < #{today} AND deleted = 0")
     Integer selectOverdueCount(@Param("today") LocalDate today);
+    
+    @Select("SELECT COUNT(*) FROM borrow_record WHERE user_id = #{userId} AND status = 0 AND due_date < #{today} AND deleted = 0")
+    Integer selectUserOverdueCount(@Param("userId") Long userId, @Param("today") LocalDate today);
     
     @Select("SELECT DATE_FORMAT(borrow_date, '%Y-%m') as month, COUNT(*) as count " +
             "FROM borrow_record WHERE deleted = 0 " +

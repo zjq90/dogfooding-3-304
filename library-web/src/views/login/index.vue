@@ -97,7 +97,8 @@ export default {
           try {
             const res = await login(this.loginForm)
             if (res.code === 200) {
-              const { token, ...userInfo } = res.data
+              const { token, userId, username, realName, role, avatar } = res.data
+              const userInfo = { userId, username, realName, role, avatar }
               this.$store.dispatch('login', { token, userInfo })
               this.$message.success('登录成功')
               this.$router.push('/')

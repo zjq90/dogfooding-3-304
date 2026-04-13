@@ -5,6 +5,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 
+/**
+ * 图书借阅管理系统启动类
+ * 主入口，配置组件扫描和缓存
+ */
 @SpringBootApplication
 @MapperScan("com.library.mapper")
 @EnableCaching

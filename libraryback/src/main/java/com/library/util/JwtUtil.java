@@ -10,6 +10,10 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.util.Date;
 
+/**
+ * JWT工具类
+ * 用于生成和验证JWT token
+ */
 @Component
 public class JwtUtil {
 
@@ -19,18 +23,18 @@ public class JwtUtil {
     @Value("${jwt.expiration:86400000}")
     private Long expiration;
     
-    private static String STATIC_SECRET;
-    private static Long STATIC_EXPIRATION;
+    private static String staticSecret;
+    private static Long staticExpiration;
     
     @PostConstruct
     public void init() {
-        STATIC_SECRET = secret;
-        STATIC_EXPIRATION = expiration;
+        staticSecret = secret;
+        staticExpiration = expiration;
     }
     
     public static String generateToken(Long userId, String username, Integer role) {
         Date now = new Date();
-        Date expirationDate = new Date(now.getTime() + STATIC_EXPIRATION);
+        Date expirationDate = new Date(now.getTime() + staticExpiration);
         
         return JWT.create()
                 .withSubject(String.valueOf(userId))
@@ -39,11 +43,11 @@ public class JwtUtil {
                 .withClaim("role", role)
                 .withIssuedAt(now)
                 .withExpiresAt(expirationDate)
-                .sign(Algorithm.HMAC256(STATIC_SECRET));
+                .sign(Algorithm.HMAC256(staticSecret));
     }
     
     public static DecodedJWT verifyToken(String token) {
-        JWTVerifier verifier = JWT.require(Algorithm.HMAC256(STATIC_SECRET)).build();
+        JWTVerifier verifier = JWT.require(Algorithm.HMAC256(staticSecret)).build();
         return verifier.verify(token);
     }
     

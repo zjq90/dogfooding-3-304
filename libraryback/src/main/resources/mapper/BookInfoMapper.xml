@@ -23,14 +23,31 @@
     </resultMap>
 
     <select id="selectBookPage" resultMap="BookResultMap">
-        SELECT b.*, c.name as category_name 
+        SELECT 
+            b.id,
+            b.isbn,
+            b.title,
+            b.author,
+            b.publisher,
+            b.publish_date,
+            b.category_id,
+            c.name AS category_name,
+            b.description,
+            b.cover_image,
+            b.price,
+            b.total_quantity,
+            b.available_quantity,
+            b.location,
+            b.status,
+            b.create_time,
+            b.update_time
         FROM book_info b
-        LEFT JOIN book_category c ON b.category_id = c.id
+        LEFT JOIN book_category c ON b.category_id = c.id AND c.deleted = 0
         WHERE b.deleted = 0
         <if test="keyword != null and keyword != ''">
             AND (b.title LIKE CONCAT('%', #{keyword}, '%') 
-            OR b.author LIKE CONCAT('%', #{keyword}, '%')
-            OR b.isbn LIKE CONCAT('%', #{keyword}, '%'))
+                 OR b.author LIKE CONCAT('%', #{keyword}, '%')
+                 OR b.isbn LIKE CONCAT('%', #{keyword}, '%'))
         </if>
         <if test="categoryId != null">
             AND b.category_id = #{categoryId}

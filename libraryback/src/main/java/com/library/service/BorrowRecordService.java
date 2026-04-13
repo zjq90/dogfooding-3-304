@@ -7,6 +7,10 @@ import com.library.entity.BorrowRecord;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 借阅记录服务接口
+ * 定义借阅相关的业务方法
+ */
 public interface BorrowRecordService extends IService<BorrowRecord> {
     
     PageResult<BorrowRecord> getBorrowPage(Integer page, Integer size, Long userId, Long bookId, Integer status);

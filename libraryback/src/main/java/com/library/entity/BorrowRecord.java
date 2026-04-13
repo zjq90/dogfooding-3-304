@@ -5,6 +5,10 @@ import lombok.Data;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+/**
+ * 借阅记录实体类
+ * 记录图书借阅和归还信息
+ */
 @Data
 @TableName("borrow_record")
 public class BorrowRecord {

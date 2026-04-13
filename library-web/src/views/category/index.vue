@@ -50,7 +50,9 @@
         :rules="rules"
         label-width="100px"
       >
-   
+        <el-form-item label="分类名称" prop="name">
+          <el-input v-model="form.name" placeholder="请输入分类名称" />
+        </el-form-item>
         <el-form-item label="分类编码" prop="code">
           <el-input v-model="form.code" placeholder="请输入分类编码" />
         </el-form-item>

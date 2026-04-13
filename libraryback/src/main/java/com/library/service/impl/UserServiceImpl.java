@@ -17,6 +17,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 用户服务实现类
+ * 提供用户登录、注册、信息管理等功能
+ */
 @Slf4j
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
@@ -37,7 +41,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             throw new BusinessException("用户名或密码错误");
         }
         
-        // 缓存用户信息
         String cacheKey = "user:" + user.getId();
         redisTemplate.opsForValue().set(cacheKey, user, 30, TimeUnit.MINUTES);
         
@@ -65,22 +68,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         wrapper.orderByDesc(User::getCreateTime);
         Page<User> userPage = this.page(pageParam, wrapper);
         
-        return new PageResult<User>(userPage.getTotal(), userPage.getRecords(), 
-                               userPage.getCurrent(), userPage.getSize());
+        return new PageResult<>(userPage.getTotal(), userPage.getRecords(), 
+                                userPage.getCurrent(), userPage.getSize());
     }
 
     @Override
     public boolean register(User user) {
-        // 检查用户名是否已存在
         User existUser = getByUsername(user.getUsername());
         if (existUser != null) {
             throw new BusinessException("用户名已存在");
         }
         
-        // 加密密码
         user.setPassword(PasswordUtil.encode(user.getPassword()));
-        user.setRole(0); // 普通用户
-        user.setStatus(1); // 启用
+        user.setRole(0);
+        user.setStatus(1);
         
         return this.save(user);
     }
@@ -99,7 +100,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setPassword(PasswordUtil.encode(newPassword));
         boolean result = this.updateById(user);
         
-        // 清除缓存
         if (result) {
             redisTemplate.delete("user:" + userId);
         }

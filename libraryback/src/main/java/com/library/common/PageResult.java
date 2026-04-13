@@ -3,6 +3,10 @@ package com.library.common;
 import lombok.Data;
 import java.util.List;
 
+/**
+ * 分页结果封装类
+ * 用于统一返回分页数据格式
+ */
 @Data
 public class PageResult<T> {
     
@@ -19,14 +23,6 @@ public class PageResult<T> {
         this.records = records;
         this.current = current;
         this.size = size;
-        this.pages = size != null && size > 0 ? (total + size - 1) / size : 0;
-    }
-    
-    public PageResult(Long total, List<T> records, long current, long size) {
-        this.total = total;
-        this.records = records;
-        this.current = current;
-        this.size = size;
-        this.pages = size > 0 ? (total + size - 1) / size : 0;
+        this.pages = (size != null && size > 0) ? (total + size - 1) / size : 0L;
     }
 }
