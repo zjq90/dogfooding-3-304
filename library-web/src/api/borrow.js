@@ -17,16 +17,12 @@ export function getMyBorrows(params) {
 }
 
 export function borrowBook(bookId, borrowDays = 30) {
-  const params = new URLSearchParams()
-  params.append('bookId', bookId)
-  params.append('borrowDays', borrowDays)
-  
   return request({
     url: '/borrow',
     method: 'post',
-    data: params,
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
+    params: {
+      bookId,
+      borrowDays
     }
   })
 }

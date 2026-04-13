@@ -22,13 +22,20 @@
         <result column="update_time" property="updateTime"/>
     </resultMap>
 
+    <sql id="bookBaseColumns">
+        b.id, b.isbn, b.title, b.author, b.publisher, b.publish_date, b.category_id,
+        b.description, b.cover_image, b.price, b.total_quantity, b.available_quantity,
+        b.location, b.status, b.create_time, b.update_time, c.name AS category_name
+    </sql>
+
     <select id="selectBookPage" resultMap="BookResultMap">
-        SELECT b.*, c.name as category_name 
+        SELECT
+        <include refid="bookBaseColumns"/>
         FROM book_info b
         LEFT JOIN book_category c ON b.category_id = c.id
         WHERE b.deleted = 0
         <if test="keyword != null and keyword != ''">
-            AND (b.title LIKE CONCAT('%', #{keyword}, '%') 
+            AND (b.title LIKE CONCAT('%', #{keyword}, '%')
             OR b.author LIKE CONCAT('%', #{keyword}, '%')
             OR b.isbn LIKE CONCAT('%', #{keyword}, '%'))
         </if>

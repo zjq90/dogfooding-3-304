@@ -34,8 +34,8 @@ public class BorrowRecordServiceImpl extends ServiceImpl<BorrowRecordMapper, Bor
     public PageResult<BorrowRecord> getBorrowPage(Integer page, Integer size, Long userId, Long bookId, Integer status) {
         Page<BorrowRecord> pageParam = new Page<>(page, size);
         Page<BorrowRecord> recordPage = baseMapper.selectBorrowPage(pageParam, userId, bookId, status);
-        return new PageResult<BorrowRecord>(recordPage.getTotal(), recordPage.getRecords(),
-                               recordPage.getCurrent(), recordPage.getSize());
+        return new PageResult<>(recordPage.getTotal(), recordPage.getRecords(),
+                recordPage.getCurrent(), recordPage.getSize());
     }
 
     @Override
@@ -97,11 +97,12 @@ public class BorrowRecordServiceImpl extends ServiceImpl<BorrowRecordMapper, Bor
         
         // 更新借阅记录
         record.setReturnDate(LocalDate.now());
-        record.setStatus(1); // 已归还
         
         // 检查是否逾期
         if (LocalDate.now().isAfter(record.getDueDate())) {
             record.setStatus(2); // 逾期归还
+        } else {
+            record.setStatus(1); // 正常归还
         }
         
         boolean updateSuccess = this.updateById(record);

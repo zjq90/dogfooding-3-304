@@ -28,8 +28,8 @@ public class BookInfoServiceImpl extends ServiceImpl<BookInfoMapper, BookInfo> i
     public PageResult<BookInfo> getBookPage(Integer page, Integer size, String keyword, Long categoryId) {
         Page<BookInfo> pageParam = new Page<>(page, size);
         Page<BookInfo> bookPage = baseMapper.selectBookPage(pageParam, keyword, categoryId);
-        return new PageResult<BookInfo>(bookPage.getTotal(), bookPage.getRecords(),
-                               bookPage.getCurrent(), bookPage.getSize());
+        return new PageResult<>(bookPage.getTotal(), bookPage.getRecords(),
+                bookPage.getCurrent(), bookPage.getSize());
     }
 
     @Override

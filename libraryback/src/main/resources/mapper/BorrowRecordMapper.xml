@@ -19,8 +19,15 @@
         <result column="update_time" property="updateTime"/>
     </resultMap>
 
+    <sql id="borrowBaseColumns">
+        br.id, br.user_id, br.book_id, br.borrow_date, br.due_date, br.return_date,
+        br.status, br.remark, br.create_time, br.update_time,
+        u.username, u.real_name, b.title AS book_title, b.isbn AS book_isbn
+    </sql>
+
     <select id="selectBorrowPage" resultMap="BorrowResultMap">
-        SELECT br.*, u.username, u.real_name, b.title as book_title, b.isbn as book_isbn
+        SELECT
+        <include refid="borrowBaseColumns"/>
         FROM borrow_record br
         LEFT JOIN sys_user u ON br.user_id = u.id
         LEFT JOIN book_info b ON br.book_id = b.id
