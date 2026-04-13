@@ -37,4 +37,12 @@
         ORDER BY br.create_time DESC
     </select>
 
+    <select id="selectBorrowDetail" resultMap="BorrowResultMap">
+        SELECT br.*, u.username, u.real_name, b.title as book_title, b.isbn as book_isbn
+        FROM borrow_record br
+        LEFT JOIN sys_user u ON br.user_id = u.id
+        LEFT JOIN book_info b ON br.book_id = b.id
+        WHERE br.id = #{id} AND br.deleted = 0
+    </select>
+
 </mapper>
