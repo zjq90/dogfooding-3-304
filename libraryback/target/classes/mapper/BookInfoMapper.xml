@@ -23,12 +23,12 @@
     </resultMap>
 
     <select id="selectBookPage" resultMap="BookResultMap">
-        SELECT b.*, c.name as category_name 
+        SELECT b.*, c.name as category_name
         FROM book_info b
         LEFT JOIN book_category c ON b.category_id = c.id
         WHERE b.deleted = 0
         <if test="keyword != null and keyword != ''">
-            AND (b.title LIKE CONCAT('%', #{keyword}, '%') 
+            AND (b.title LIKE CONCAT('%', #{keyword}, '%')
             OR b.author LIKE CONCAT('%', #{keyword}, '%')
             OR b.isbn LIKE CONCAT('%', #{keyword}, '%'))
         </if>
@@ -36,6 +36,13 @@
             AND b.category_id = #{categoryId}
         </if>
         ORDER BY b.create_time DESC
+    </select>
+
+    <select id="selectBookDetail" resultMap="BookResultMap">
+        SELECT b.*, c.name as category_name
+        FROM book_info b
+        LEFT JOIN book_category c ON b.category_id = c.id
+        WHERE b.id = #{id} AND b.deleted = 0
     </select>
 
 </mapper>

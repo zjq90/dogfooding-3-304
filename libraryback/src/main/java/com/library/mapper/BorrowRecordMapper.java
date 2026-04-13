@@ -13,8 +13,8 @@ import java.util.Map;
 
 @Mapper
 public interface BorrowRecordMapper extends BaseMapper<BorrowRecord> {
-    
-    Page<BorrowRecord> selectBorrowPage(Page<BorrowRecord> page,
+
+    Page<BorrowRecord> selectBorrowPage(@Param("page") Page<BorrowRecord> page,
                                          @Param("userId") Long userId,
                                          @Param("bookId") Long bookId,
                                          @Param("status") Integer status);

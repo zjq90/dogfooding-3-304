@@ -12,9 +12,9 @@ import java.util.List;
 
 @Mapper
 public interface BookInfoMapper extends BaseMapper<BookInfo> {
-    
-    Page<BookInfo> selectBookPage(Page<BookInfo> page, 
-                                   @Param("keyword") String keyword, 
+
+    Page<BookInfo> selectBookPage(@Param("page") Page<BookInfo> page,
+                                   @Param("keyword") String keyword,
                                    @Param("categoryId") Long categoryId);
     
     @Select("SELECT b.*, c.name as category_name FROM book_info b " +
