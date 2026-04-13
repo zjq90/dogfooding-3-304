@@ -8,7 +8,6 @@ import com.library.common.PageResult;
 import com.library.entity.User;
 import com.library.mapper.UserMapper;
 import com.library.service.UserService;
-import com.library.util.JwtUtil;
 import com.library.util.PasswordUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,12 +64,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         wrapper.orderByDesc(User::getCreateTime);
         Page<User> userPage = this.page(pageParam, wrapper);
         
-        return new PageResult<User>(userPage.getTotal(), userPage.getRecords(), 
-                               userPage.getCurrent(), userPage.getSize());
+        return new PageResult<>(userPage.getTotal(), userPage.getRecords(),
+                userPage.getCurrent(), userPage.getSize());
     }
 
     @Override
     public boolean register(User user) {
+        log.info("用户注册，用户名: {}", user.getUsername());
         // 检查用户名是否已存在
         User existUser = getByUsername(user.getUsername());
         if (existUser != null) {
@@ -82,7 +82,39 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setRole(0); // 普通用户
         user.setStatus(1); // 启用
         
-        return this.save(user);
+        boolean result = this.save(user);
+        log.info("用户注册成功，用户名: {}", user.getUsername());
+        return result;
+    }
+
+    @Override
+    public boolean addUser(User user) {
+        log.info("管理员添加用户，用户名: {}", user.getUsername());
+        // 检查用户名是否已存在
+        User existUser = getByUsername(user.getUsername());
+        if (existUser != null) {
+            throw new BusinessException("用户名已存在");
+        }
+        
+        // 加密密码
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            user.setPassword(PasswordUtil.encode(user.getPassword()));
+        } else {
+            // 默认密码
+            user.setPassword(PasswordUtil.encode("123456"));
+        }
+        
+        if (user.getStatus() == null) {
+            user.setStatus(1); // 默认启用
+        }
+        
+        boolean result = this.save(user);
+        if (result) {
+            log.info("用户添加成功，用户名: {}", user.getUsername());
+        } else {
+            log.error("用户添加失败，用户名: {}", user.getUsername());
+        }
+        return result;
     }
 
     @Override

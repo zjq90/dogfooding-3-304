@@ -96,12 +96,10 @@ export default {
           this.loading = true
           try {
             const res = await login(this.loginForm)
-            if (res.code === 200) {
-              const { token, ...userInfo } = res.data
-              this.$store.dispatch('login', { token, userInfo })
-              this.$message.success('登录成功')
-              this.$router.push('/')
-            }
+            const { token, ...userInfo } = res.data
+            this.$store.dispatch('login', { token, userInfo })
+            this.$message.success('登录成功')
+            this.$router.push('/')
           } catch (error) {
             console.error('登录失败:', error)
           } finally {
