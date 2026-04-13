@@ -85,10 +85,8 @@ CREATE TABLE IF NOT EXISTS borrow_record (
     FOREIGN KEY (book_id) REFERENCES book_info(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='借阅记录表';
 
--- 插入默认管理员用户（密码：admin123）
--- 密码使用BCrypt加密
-INSERT INTO sys_user (username, password, real_name, role, status) VALUES 
-('admin', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iAt6Z5EO', '系统管理员', 1, 1);
+-- 默认管理员用户由应用启动时自动创建
+-- 用户名: admin, 密码: admin123
 
 -- 插入图书分类数据
 INSERT INTO book_category (name, code, description, sort_order, parent_id) VALUES

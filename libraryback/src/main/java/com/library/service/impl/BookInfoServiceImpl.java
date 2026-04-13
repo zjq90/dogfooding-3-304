@@ -17,6 +17,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 图书信息服务实现类
+ * 提供图书的增删改查、借阅、归还等功能
+ */
 @Slf4j
 @Service
 public class BookInfoServiceImpl extends ServiceImpl<BookInfoMapper, BookInfo> implements BookInfoService {
@@ -28,8 +32,8 @@ public class BookInfoServiceImpl extends ServiceImpl<BookInfoMapper, BookInfo> i
     public PageResult<BookInfo> getBookPage(Integer page, Integer size, String keyword, Long categoryId) {
         Page<BookInfo> pageParam = new Page<>(page, size);
         Page<BookInfo> bookPage = baseMapper.selectBookPage(pageParam, keyword, categoryId);
-        return new PageResult<BookInfo>(bookPage.getTotal(), bookPage.getRecords(),
-                               bookPage.getCurrent(), bookPage.getSize());
+        return new PageResult<>(bookPage.getTotal(), bookPage.getRecords(),
+                                bookPage.getCurrent(), bookPage.getSize());
     }
 
     @Override

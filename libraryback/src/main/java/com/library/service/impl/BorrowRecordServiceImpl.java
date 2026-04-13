@@ -20,6 +20,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 借阅记录服务实现类
+ * 提供图书借阅、归还、统计等功能
+ */
 @Slf4j
 @Service
 public class BorrowRecordServiceImpl extends ServiceImpl<BorrowRecordMapper, BorrowRecord> implements BorrowRecordService {
@@ -30,54 +34,67 @@ public class BorrowRecordServiceImpl extends ServiceImpl<BorrowRecordMapper, Bor
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
+    /**
+     * 分页查询借阅记录
+     */
     @Override
     public PageResult<BorrowRecord> getBorrowPage(Integer page, Integer size, Long userId, Long bookId, Integer status) {
         Page<BorrowRecord> pageParam = new Page<>(page, size);
         Page<BorrowRecord> recordPage = baseMapper.selectBorrowPage(pageParam, userId, bookId, status);
-        return new PageResult<BorrowRecord>(recordPage.getTotal(), recordPage.getRecords(),
-                               recordPage.getCurrent(), recordPage.getSize());
+        return new PageResult<>(recordPage.getTotal(), recordPage.getRecords(),
+                                recordPage.getCurrent(), recordPage.getSize());
     }
 
+    /**
+     * 获取借阅记录详情
+     */
     @Override
     public BorrowRecord getBorrowDetail(Long id) {
         return baseMapper.selectBorrowDetail(id);
     }
 
+    /**
+     * 借阅图书
+     * 检查用户借阅数量限制和逾期情况
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean borrowBook(Long userId, Long bookId, Integer borrowDays) {
-        // 检查用户当前借阅数量
         Integer borrowingCount = getBorrowingCount(userId);
         if (borrowingCount >= 5) {
             throw new BusinessException("您已达到最大借阅数量限制(5本)");
         }
         
-        // 检查是否有逾期未还
-        // TODO: 实现逾期检查
+        Integer overdueCount = baseMapper.selectUserOverdueCount(userId, LocalDate.now());
+        if (overdueCount > 0) {
+            throw new BusinessException("您有逾期未还的图书，请先归还后再借阅");
+        }
         
-        // 借阅图书
         boolean borrowSuccess = bookInfoService.borrowBook(bookId, userId);
         if (!borrowSuccess) {
             throw new BusinessException("借阅失败，图书库存不足");
         }
         
-        // 创建借阅记录
         BorrowRecord record = new BorrowRecord();
         record.setUserId(userId);
         record.setBookId(bookId);
         record.setBorrowDate(LocalDate.now());
         record.setDueDate(LocalDate.now().plusDays(borrowDays));
-        record.setStatus(0); // 借阅中
+        record.setStatus(0);
         
         boolean saveSuccess = this.save(record);
         if (saveSuccess) {
-            // 清除统计缓存
             clearStatsCache();
+            log.info("用户 {} 成功借阅图书 {}, 借阅天数: {}天", userId, bookId, borrowDays);
         }
         
         return saveSuccess;
     }
 
+    /**
+     * 归还图书
+     * 自动检测是否逾期并更新状态
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean returnBook(Long recordId) {
@@ -89,39 +106,47 @@ public class BorrowRecordServiceImpl extends ServiceImpl<BorrowRecordMapper, Bor
             throw new BusinessException("该图书已归还");
         }
         
-        // 归还图书
         boolean returnSuccess = bookInfoService.returnBook(record.getBookId(), record.getUserId());
         if (!returnSuccess) {
             throw new BusinessException("归还失败");
         }
         
-        // 更新借阅记录
         record.setReturnDate(LocalDate.now());
-        record.setStatus(1); // 已归还
+        record.setStatus(1);
         
-        // 检查是否逾期
         if (LocalDate.now().isAfter(record.getDueDate())) {
-            record.setStatus(2); // 逾期归还
+            record.setStatus(2);
+            log.warn("图书归还逾期，记录ID: {}, 应还日期: {}", recordId, record.getDueDate());
         }
         
         boolean updateSuccess = this.updateById(record);
         if (updateSuccess) {
             clearStatsCache();
+            log.info("图书归还成功，记录ID: {}", recordId);
         }
         
         return updateSuccess;
     }
 
+    /**
+     * 获取用户当前借阅中的数量
+     */
     @Override
     public Integer getBorrowingCount(Long userId) {
         return baseMapper.selectBorrowingCount(userId);
     }
 
+    /**
+     * 获取逾期未还数量
+     */
     @Override
     public Integer getOverdueCount() {
         return baseMapper.selectOverdueCount(LocalDate.now());
     }
 
+    /**
+     * 获取月度借阅统计
+     */
     @Override
     public List<Map<String, Object>> getMonthlyBorrowStats() {
         String cacheKey = "stats:monthlyBorrow";
@@ -133,6 +158,9 @@ public class BorrowRecordServiceImpl extends ServiceImpl<BorrowRecordMapper, Bor
         return stats;
     }
 
+    /**
+     * 获取热门图书列表
+     */
     @Override
     public List<Map<String, Object>> getHotBooks() {
         String cacheKey = "stats:hotBooks";
@@ -144,6 +172,9 @@ public class BorrowRecordServiceImpl extends ServiceImpl<BorrowRecordMapper, Bor
         return hotBooks;
     }
 
+    /**
+     * 获取总借阅次数
+     */
     @Override
     public Long getTotalBorrowCount() {
         String cacheKey = "stats:totalBorrowCount";
@@ -155,6 +186,9 @@ public class BorrowRecordServiceImpl extends ServiceImpl<BorrowRecordMapper, Bor
         return count;
     }
     
+    /**
+     * 清除统计缓存
+     */
     private void clearStatsCache() {
         redisTemplate.delete("stats:monthlyBorrow");
         redisTemplate.delete("stats:hotBooks");

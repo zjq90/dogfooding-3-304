@@ -10,6 +10,9 @@ import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
+/**
+ * 图书信息数据访问层
+ */
 @Mapper
 public interface BookInfoMapper extends BaseMapper<BookInfo> {
     
@@ -22,18 +25,19 @@ public interface BookInfoMapper extends BaseMapper<BookInfo> {
             "WHERE b.id = #{id} AND b.deleted = 0")
     BookInfo selectBookDetail(@Param("id") Long id);
     
-    @Update("UPDATE book_info SET available_quantity = available_quantity + #{delta} " +
-            "WHERE id = #{id} AND available_quantity + #{delta} >= 0")
+    @Update("UPDATE book_info SET available_quantity = available_quantity + #{delta}, " +
+            "update_time = NOW() " +
+            "WHERE id = #{id} AND available_quantity + #{delta} >= 0 AND deleted = 0")
     int updateAvailableQuantity(@Param("id") Long id, @Param("delta") int delta);
     
     @Select("SELECT COUNT(*) FROM book_info WHERE deleted = 0")
     Long selectBookCount();
     
-    @Select("SELECT SUM(total_quantity) FROM book_info WHERE deleted = 0")
+    @Select("SELECT COALESCE(SUM(total_quantity), 0) FROM book_info WHERE deleted = 0")
     Long selectTotalBookQuantity();
     
     @Select("SELECT b.category_id, c.name as category_name, COUNT(*) as count " +
             "FROM book_info b LEFT JOIN book_category c ON b.category_id = c.id " +
-            "WHERE b.deleted = 0 GROUP BY b.category_id")
+            "WHERE b.deleted = 0 GROUP BY b.category_id ORDER BY count DESC")
     List<java.util.Map<String, Object>> selectCategoryStats();
 }

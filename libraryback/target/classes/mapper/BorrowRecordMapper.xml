@@ -20,10 +20,24 @@
     </resultMap>
 
     <select id="selectBorrowPage" resultMap="BorrowResultMap">
-        SELECT br.*, u.username, u.real_name, b.title as book_title, b.isbn as book_isbn
+        SELECT 
+            br.id,
+            br.user_id,
+            u.username,
+            u.real_name,
+            br.book_id,
+            b.title AS book_title,
+            b.isbn AS book_isbn,
+            br.borrow_date,
+            br.due_date,
+            br.return_date,
+            br.status,
+            br.remark,
+            br.create_time,
+            br.update_time
         FROM borrow_record br
-        LEFT JOIN sys_user u ON br.user_id = u.id
-        LEFT JOIN book_info b ON br.book_id = b.id
+        LEFT JOIN sys_user u ON br.user_id = u.id AND u.deleted = 0
+        LEFT JOIN book_info b ON br.book_id = b.id AND b.deleted = 0
         WHERE br.deleted = 0
         <if test="userId != null">
             AND br.user_id = #{userId}

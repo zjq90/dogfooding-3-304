@@ -13,6 +13,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 统计服务实现类
+ * 提供仪表盘数据、借阅趋势、热门图书等统计功能
+ */
 @Slf4j
 @Service
 public class StatisticsServiceImpl implements StatisticsService {
@@ -26,44 +30,53 @@ public class StatisticsServiceImpl implements StatisticsService {
     @Autowired
     private BorrowRecordService borrowRecordService;
 
+    /**
+     * 获取仪表盘统计数据
+     */
     @Override
     public Map<String, Object> getDashboardStats() {
         Map<String, Object> stats = new HashMap<>();
         
-        // 用户统计
         stats.put("userCount", userService.getUserCount());
-        
-        // 图书统计
         stats.put("bookCount", bookInfoService.getBookCount());
         stats.put("totalBookQuantity", bookInfoService.getTotalBookQuantity());
-        
-        // 借阅统计
         stats.put("totalBorrowCount", borrowRecordService.getTotalBorrowCount());
         stats.put("overdueCount", borrowRecordService.getOverdueCount());
         
         return stats;
     }
 
+    /**
+     * 获取月度借阅趋势
+     */
     @Override
     public List<Map<String, Object>> getMonthlyBorrowTrend() {
         return borrowRecordService.getMonthlyBorrowStats();
     }
 
+    /**
+     * 获取热门分类统计
+     */
     @Override
     public List<Map<String, Object>> getHotCategoryStats() {
         return bookInfoService.getCategoryStats();
     }
 
+    /**
+     * 获取热门图书统计
+     */
     @Override
     public List<Map<String, Object>> getHotBookStats() {
         return borrowRecordService.getHotBooks();
     }
 
+    /**
+     * 获取用户增长统计
+     */
     @Override
     public Map<String, Object> getUserGrowthStats() {
         Map<String, Object> result = new HashMap<>();
         
-        // 模拟用户增长数据（实际应该从数据库查询）
         List<String> months = new ArrayList<>();
         List<Integer> userCounts = new ArrayList<>();
         

@@ -5,6 +5,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import java.time.LocalDateTime;
 
+/**
+ * 用户实体类
+ * 存储系统用户信息
+ */
 @Data
 @TableName("sys_user")
 public class User {

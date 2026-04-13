@@ -6,6 +6,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+/**
+ * 图书信息实体类
+ * 存储图书基本信息和库存信息
+ */
 @Data
 @TableName("book_info")
 public class BookInfo {
