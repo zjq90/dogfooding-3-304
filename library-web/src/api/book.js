@@ -10,7 +10,7 @@ export function getBookList(params) {
 
 export function getBookDetail(id) {
   return request({
-    url: `/book/${id}`,
+    url: `/book/`,
     method: 'get'
   })
 }

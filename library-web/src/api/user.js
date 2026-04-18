@@ -10,7 +10,7 @@ export function getUserList(params) {
 
 export function getUserDetail(id) {
   return request({
-    url: `/user/${id}`,
+    url: `/user/`,
     method: 'get'
   })
 }

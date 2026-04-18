@@ -123,6 +123,7 @@
     <orderEntry type="library" name="Maven: com.alibaba:fastjson:2.0.38" level="project" />
     <orderEntry type="library" name="Maven: com.alibaba.fastjson2:fastjson2-extension:2.0.38" level="project" />
     <orderEntry type="library" name="Maven: com.alibaba.fastjson2:fastjson2:2.0.38" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.h2database:h2:2.1.214" level="project" />
     <orderEntry type="library" name="Maven: com.github.pagehelper:pagehelper-spring-boot-starter:1.4.7" level="project" />
     <orderEntry type="library" name="Maven: org.mybatis.spring.boot:mybatis-spring-boot-starter:2.3.1" level="project" />
     <orderEntry type="library" name="Maven: org.mybatis.spring.boot:mybatis-spring-boot-autoconfigure:2.3.1" level="project" />

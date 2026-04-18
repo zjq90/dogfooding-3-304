@@ -6,6 +6,8 @@ server:
 spring:
   application:
     name: library-system
+  profiles:
+    active: h2
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
